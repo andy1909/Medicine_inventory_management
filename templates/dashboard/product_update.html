@@ -1,0 +1,65 @@
+{% extends 'partials/base.html' %}
+{% block title %} Update Page {% endblock %}
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+{% include 'partials/topnav.html' %}
+
+
+
+
+<!-- ===============================================
+                    HTML
+================================================ -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4><i class="fas fa-edit"></i> Chỉnh Sửa Thông Tin Thuốc</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="mt-4 text-right">
+                            <a href="{% url 'dashboard-product' %}" class="btn btn-secondary">Hủy Bỏ</a>
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-save"></i> Cập Nhật
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- ===============================================
+                   JAVASCRIPT
+================================================ -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formatPrice = (input) => {
+        let value = input.value.replace(/\./g, '').replace(/\D/g, '');
+        if (value) {
+            input.value = Number(value).toLocaleString('vi-VN');
+        } else {
+            input.value = '';
+        }
+    };
+    const priceInputs = document.querySelectorAll('input[name="import_price"], input[name="sale_price"]');
+    priceInputs.forEach(input => {
+        formatPrice(input);
+        input.addEventListener('input', function() {
+            formatPrice(this);
+        });
+    });
+});
+</script>
+{% endblock %}

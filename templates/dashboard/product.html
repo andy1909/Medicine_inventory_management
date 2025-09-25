@@ -1,0 +1,165 @@
+{% extends 'partials/base.html' %}
+{% block title %} Quản Lý Thuốc {% endblock %}
+{% load humanize %} <!-- Thêm dòng này để sử dụng filter định dạng số -->
+
+{% block content %}
+{% include 'partials/topnav.html' %}
+
+<!-- ===============================================
+                   STYLE CSS TỐI ƯU
+================================================ -->
+<style>
+    .card-header h4 {
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card-header h4 i {
+        margin-right: 10px;
+    }
+
+    .table-container {
+        /* Bỏ border ở đây để dùng border của card */
+        max-height: 60vh; /* Chiều cao tối đa bằng 60% chiều cao màn hình */
+        overflow-y: auto;
+    }
+
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa; /* Màu nền xám nhạt cho header */
+        color: #343a40; /* Màu chữ tối */
+        z-index: 10;
+        vertical-align: middle;
+        text-align: center;
+        border-bottom: 2px solid #dee2e6;
+        white-space: nowrap;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .table tbody tr:hover {
+        background-color: #e9ecef; /* Hiệu ứng khi di chuột qua */
+    }
+
+    .action-buttons a {
+        margin: 0 5px;
+    }
+
+    /* Đánh dấu các dòng sản phẩm đặc biệt */
+    .table-danger, .table-danger > th, .table-danger > td {
+        background-color: #f8d7da !important; /* Hết hàng */
+    }
+    .table-warning, .table-warning > th, .table-warning > td {
+        background-color: #fff3cd !important; /* Sắp hết hàng */
+    }
+</style>
+
+<!-- ===============================================
+                   HTML CẤU TRÚC LẠI
+================================================ -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4><i class="fas fa-pills"></i> Danh Sách Thuốc</h4>
+                        <a href="{% url 'dashboard-product-add' %}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Thêm Thuốc Mới
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Form tìm kiếm -->
+                    <form method="GET" action="{% url 'dashboard-product' %}" class="mb-4">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Tìm theo mã, tên hoặc danh mục thuốc..." value="{{ search_query }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i> Tìm Kiếm
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Bảng sản phẩm với thanh cuộn và responsive -->
+                    <div class="table-responsive table-container">
+                        <table class="table table-hover table-bordered">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Mã thuốc</th>
+                                    <th scope="col">Tên thuốc</th>
+                                    <th scope="col">Danh mục</th>
+                                    <th scope="col">Số lượng</th>
+                                    <th scope="col">Đơn vị</th>
+                                    <th scope="col">Giá nhập (VNĐ)</th>
+                                    <th scope="col">Giá bán (VNĐ)</th>
+                                    <th scope="col">Ngày hết hạn</th>
+                                    <th scope="col">Nhà cung cấp</th>
+                                    <th scope="col">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in items %}
+                                    {% comment %} Đặt class cho dòng dựa trên số lượng {% endcomment %}
+                                    <tr class="{% if item.quantity == 0 %}table-danger{% elif item.quantity < 10 %}table-warning{% endif %}">
+                                        <td><strong>{{ item.code }}</strong></td>
+                                        <td class="text-left">{{ item.name }}</td>
+                                        <td>{{ item.category }}</td>
+                                        <td>
+                                            <span class="badge {% if item.quantity == 0 %}badge-danger{% elif item.quantity < 10 %}badge-warning{% else %}badge-info{% endif %} p-2">
+                                                {{ item.quantity|default:"N/A" }}
+                                            </span>
+                                        </td>
+                                        <td>{{ item.unit|default:"N/A" }}</td>
+                                        <td class="text-right">{{ item.import_price|floatformat:"0"|intcomma }}</td>
+                                        <td class="text-right">{{ item.sale_price|floatformat:"0"|intcomma }}</td>
+                                        <td>{{ item.expiry_date|date:"d/m/Y"|default:"N/A"}}</td>
+                                        <td class="text-left">{{ item.supplier|default:"N/A" }}</td>
+                                        <td class="action-buttons">
+                                            <a href="{% url 'dashboard-product-update' item.id %}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Chỉnh sửa">
+                                                <i class="fas fa-pen"></i>
+                                            </a>
+                                            <a href="{% url 'dashboard-product-delete' item.id %}" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="10" class="text-center p-4">Không tìm thấy sản phẩm nào.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Kích hoạt tooltip của Bootstrap
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+{% endblock %}

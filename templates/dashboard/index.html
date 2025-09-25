@@ -1,0 +1,67 @@
+{% extends 'partials/base.html' %}
+{% block title %} Bảng Điều Khiển {% endblock %}
+
+{% block content %}
+
+    {# Trang này chỉ hiển thị nội dung nếu là Admin #}
+    {% if user.is_authenticated and user.is_staff and user.is_superuser %}
+
+        {% include 'partials/topnav.html' %}
+
+        <!--Graphs-->
+        <div class="container">
+            <div class="row my-5">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <canvas id="myChart1"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <canvas id="myChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End Graphs-->
+
+        <script>
+            var ctx1 = document.getElementById('myChart1').getContext('2d');
+            var myChart1 = new Chart(ctx1, {
+                type: 'pie',
+                data: {
+                    labels: [{% for order in orders %}'{{ order.product.name|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+                    datasets: [{
+                        label: 'Orders',
+                        data: [{% for order in orders %}{{ order.order_quantity|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                        backgroundColor: ['#DE51A8', '#0a9396', '#ee9b00', '#94d2bd', '#005f73', '#e9d8a6'],
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: { responsive: true, plugins: { title: { display: true, text: 'Phân Bố Đơn Hàng', position: 'bottom', font: { size: 16 } } } }
+            });
+
+            var ctx2 = document.getElementById('myChart').getContext('2d');
+            var myChart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: [{% for product in products %}'{{ product.name|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+                    datasets: [{
+                        label: 'Số Lượng Thuốc',
+                        data: [{% for product in products %}{{ product.quantity|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                        backgroundColor: '#005f73'
+                    }]
+                },
+                options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { title: { display: true, text: 'Số Lượng Thuốc Trong Kho', position: 'bottom', font: { size: 16 } } } }
+            });
+        </script>
+
+    {# Không cần khối else ở đây nữa #}
+    {% endif %}
+
+{% endblock %}
