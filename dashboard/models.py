@@ -26,6 +26,13 @@ GENDER_CHOICES = (
     ('Khác', 'Khác'),
 )
 
+PRESCRIPTION_STATUS_CHOICES = (
+    ('Pending', 'Chờ lấy thuốc'),
+    ('Dispensed', 'Đã lấy thuốc'),
+    ('Cancelled', 'Đã hủy'),
+)
+
+
 
 # =======================================================
 #               MODEL CƠ SỞ: PATIENT
@@ -87,6 +94,10 @@ class Prescription(models.Model):
         Patient, on_delete=models.SET_NULL, null=True, verbose_name="Bệnh nhân")
     doctor = models.ForeignKey(
         User, on_delete=models.CASCADE, null=True, verbose_name="Bác sĩ")
+    
+    status = models.CharField(
+        max_length=20, choices=PRESCRIPTION_STATUS_CHOICES, default='Pending', verbose_name="Trạng thái")
+    
     created_at = models.DateTimeField(
         auto_now_add=True, verbose_name="Thời gian tạo")
     completed_at = models.DateTimeField(
@@ -98,6 +109,7 @@ class Prescription(models.Model):
     def __str__(self):
         patient_name = self.patient.full_name if self.patient else "Không rõ"
         return f'Toa thuốc ID: {self.id} - Bệnh nhân: {patient_name}'
+
 
 
 # =======================================================
@@ -122,6 +134,7 @@ class Order(models.Model):
         staff_name = self.staff.username if self.staff else "N/A"
         product_name = self.product.name if self.product else "Sản phẩm đã xóa"
         return f'{product_name} - SL: {self.order_quantity or "N/A"} bởi {staff_name}'
+
 
 
 # =======================================================

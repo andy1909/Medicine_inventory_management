@@ -1,8 +1,8 @@
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-info bg-info">
+<nav class="navbar navbar-expand-lg navbar-info navbar-dark navbar-custom shadow-sm bg-info">
   {% if user.is_authenticated %}
   <div class="container">
-    <a class="navbar-brand text-white" href="{% url 'dashboard-index' %}"
+    <a class="navbar-brand font-weight-bold" href="{% url 'dashboard-index' %}"
       >Adoo Medicine</a
     >
     <button
@@ -20,48 +20,47 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link text-white" href="{% url 'dashboard-index' %}"
-            >Home <span class="sr-only">(current)</span></a
-          >
+          <a class="nav-link nav-link-custom {% if request.resolver_match.url_name == 'dashboard-index' %}active{% endif %}" href="{% url 'dashboard-index' %}">
+            <i class="fas fa-home mr-1"></i>Home
+          </a>
+          
         </li>
-        <li class="nav-item active"><a class="nav-link text-white" href="{% url 'dashboard-patient-list' %}">Hồ Sơ Bệnh Nhân</a></li>
+        <li class="nav-item active">
+          <a class="nav-link nav-link-custom {% if 'patient' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'dashboard-patient-list' %}">
+            <i class="fas fa-id-card mr-1"></i>Hồ Sơ Bệnh Nhân
+          </a>
+        </li>
       </ul>
-      <ul class="navbar-nav ml-auto">
+      
+      <ul class="navbar-nav ml-auto align-items-center">
         <li class="nav-item active">
-          <a
-            class="nav-link text-white align-middle"
-            href="{% url 'user-profile' %}"
-            >{{ user.username}} Profile
-            <span class="sr-only">(current)</span></a
-          >
+          <a class="nav-link nav-link-custom {% if 'profile' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'user-profile' %}">
+            <i class="fas fa-user-circle mr-1"></i>{{ user.username }}
+          </a>
         </li>
-        <li class="nav-item active">
-          <form
-            action="{% url 'user-logout' %}"
-            method="POST"
-            style="display: inline"
-          >
+        <li class="nav-item ml-2">
+          <form action="{% url 'user-logout' %}" method="POST" style="display: inline">
             {% csrf_token %}
-            <button
-              type="submit"
-              class="nav-link btn btn-link text-white align-middle"
-            >
-              Logout
+            <button type="submit" class="btn btn-outline-light btn-sm">
+              <i class="fas fa-sign-out-alt mr-1"></i>Logout
             </button>
           </form>
         </li>
       </ul>
+
+
       {% else %}
+
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item active">
-          <a class="nav-link text-white" href="{% url 'user-register' %}"
-            >Register <span class="sr-only">(current)</span></a
-          >
-        </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="{% url 'user-login' %}"
-            >Login <span class="sr-only">(current)</span></a
-          >
+          <a class="btn btn-outline-light btn-sm" href="{% url 'user-register' %}">
+            <i class="fas fa-user-plus mr-1"></i>Register
+          </a>
+        </li>
+        <li class="nav-item ml-2">
+          <a class="btn btn-light btn-sm" href="{% url 'user-login' %}">
+            <i class="fas fa-sign-in-alt mr-1"></i>Login
+          </a>
         </li>
       </ul>
       {% endif %}

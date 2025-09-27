@@ -21,4 +21,8 @@ urlpatterns = [
     path('patient/add/', views.patient_add, name='dashboard-patient-add'),
     path('patient/update/<int:pk>/', views.patient_update, name='dashboard-patient-update'),
     path('patient/delete/<int:pk>/', views.patient_delete, name='dashboard-patient-delete'),
+
+    # URLs cho module Lấy Thuốc
+    path('dispense/', views.dispense_list, name='dispense-list'),
+    path('dispense/process/<int:pk>/', views.dispense_process, name='dispense-process'),
 ]

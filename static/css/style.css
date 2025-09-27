@@ -1,0 +1,38 @@
+body {
+  background: rgb(230, 227, 227);
+}
+
+.my-card:hover {
+  transform: scale(1.1);
+  transition: 0.2s ease-in-out;
+}
+
+.my-card-custom {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border: 1px solid #e9ecef;
+    background-color: #ffffff;
+}
+
+
+.my-card-custom:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06) !important;
+}
+
+
+.nav-link-custom {
+    padding: 0.5rem 1rem !important; /* Tăng khoảng đệm */
+    border-radius: 20px; /* Bo tròn các góc */
+    transition: background-color 0.2s ease-in-out; /* Hiệu ứng chuyển động mượt */
+}
+
+/* Hiệu ứng khi di chuột qua các link */
+.nav-link-custom:hover {
+    background-color: rgba(255, 255, 255, 0.15); /* Nền trắng mờ */
+}
+
+/* Hiệu ứng cho link đang được active (trang hiện tại) */
+.nav-link-custom.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 500;
+}

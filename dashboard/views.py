@@ -34,8 +34,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 # -------------------------------------------------------
 #   VIEW: TRANG CHỦ (DASHBOARD)
-#   - Phân luồng người dùng: Admin xem dashboard,
-#     Bác sĩ được chuyển hướng đến trang kê đơn.
+#   - View này vẫn cần giữ lại context vì nó truyền dữ liệu
+#     cho biểu đồ (orders, products).
 # -------------------------------------------------------
 @login_required
 def index(request):
@@ -45,9 +45,6 @@ def index(request):
         context = {
             'orders': orders,
             'products': products,
-            'workers_count': User.objects.all().count(),
-            'orders_count': orders.count(),
-            'products_count': products.count(),
         }
         return render(request, 'dashboard/index.html', context)
     else:
@@ -56,16 +53,13 @@ def index(request):
 
 # -------------------------------------------------------
 #   VIEW: TRANG LỊCH SỬ ĐƠN HÀNG (DÀNH CHO ADMIN)
-#   - Hiển thị tất cả các giao dịch xuất kho.
+#   - Đã xóa bỏ các biến *_count không cần thiết.
 # -------------------------------------------------------
 @login_required
 def order(request):
     orders = Order.objects.all().order_by('-date')
     context = {
         'orders': orders,
-        'workers_count': User.objects.all().count(),
-        'orders_count': orders.count(),
-        'products_count': Product.objects.all().count(),
     }
     return render(request, 'dashboard/order.html', context)
 
@@ -76,8 +70,7 @@ def order(request):
 
 # -------------------------------------------------------
 #   VIEW: TRANG KÊ ĐƠN THUỐC
-#   - Xử lý việc tạo toa thuốc mới, kiểm tra kho,
-#     và cập nhật lịch sử.
+#   - Logic chính giữ nguyên.
 # -------------------------------------------------------
 @login_required
 def prescription(request):
@@ -86,14 +79,10 @@ def prescription(request):
         if prescription_form.is_valid():
             try:
                 with transaction.atomic():
-                    # --- BƯỚC 1: Xử lý form chính và gán bác sĩ ---
-                    # Tạo một đối tượng prescription trong bộ nhớ, chưa lưu vào DB
                     new_prescription = prescription_form.save(commit=False)
-                    
-                    # <-- THAY ĐỔI QUAN TRỌNG: Gán bác sĩ là người dùng đang đăng nhập
                     new_prescription.doctor = request.user
+                    new_prescription.status = 'Pending'
                     
-                    # --- BƯỚC 2: Kiểm tra và xử lý các chi tiết thuốc ---
                     form_count = int(request.POST.get('form_count', 0))
                     if form_count == 0 or not any(request.POST.get(f'details-{i}-product') for i in range(form_count)):
                         messages.error(request, 'Toa thuốc phải có ít nhất một loại thuốc.')
@@ -111,44 +100,27 @@ def prescription(request):
                                 return redirect('dashboard-prescription')
                             details_to_process.append({'product': product, 'quantity': quantity})
                     
-                    # --- BƯỚC 3: Nếu mọi thứ hợp lệ, tiến hành lưu tất cả ---
-                    new_prescription.save()  # Bây giờ mới lưu toa thuốc chính vào DB
-                    
+                    # Logic lưu đã được sửa lại cho đúng quy trình mới
+                    new_prescription.save()
                     for item in details_to_process:
-                        product = item['product']
-                        quantity = item['quantity']
                         PrescriptionDetail.objects.create(
                             prescription=new_prescription,
-                            product=product,
-                            quantity=quantity,
-                            is_collected=True)
-                        product.quantity -= quantity
-                        product.save()
-                        Order.objects.create(
-                            product=product,
-                            order_quantity=quantity,
-                            staff=request.user,
-                            prescription=new_prescription)
+                            product=item['product'],
+                            quantity=item['quantity'])
                     
-                    new_prescription.completed_at = timezone.now()
-                    new_prescription.save()
-                    messages.success(request, f'Hoàn tất toa thuốc cho bệnh nhân {new_prescription.patient.full_name}!')
+                    messages.success(request, f'Đã gửi toa thuốc cho bệnh nhân {new_prescription.patient.full_name} thành công.')
                     return redirect('dashboard-prescription')
-            
             except Exception as e:
-                messages.error(request, f'Đã có lỗi không mong muốn xảy ra: {e}')
-        
-        else: # Nếu form không hợp lệ (ví dụ: chưa chọn bệnh nhân)
+                messages.error(request, f'Đã có lỗi xảy ra: {e}')
+        else:
             messages.error(request, 'Vui lòng kiểm tra lại thông tin, bạn có thể đã chưa chọn bệnh nhân.')
     
-    # Logic cho phương thức GET: Chỉ cần tạo một form trống
+    # Logic cho phương thức GET
     prescription_form = PrescriptionForm()
-    
     if request.user.is_staff or request.user.is_superuser:
         prescriptions = Prescription.objects.all().order_by('-created_at')
     else:
         prescriptions = Prescription.objects.filter(doctor=request.user).order_by('-created_at')
-        
     context = {
         'prescription_form': prescription_form,
         'prescriptions': prescriptions,
@@ -158,12 +130,85 @@ def prescription(request):
 
 
 # =======================================================
+#               MODULE LẤY THUỐC (DISPENSE)
+# =======================================================
+
+# -------------------------------------------------------
+#   VIEW: DANH SÁCH TOA THUỐC CHỜ LẤY
+#   - Đã xóa bỏ các biến *_count không cần thiết.
+# -------------------------------------------------------
+@login_required
+def dispense_list(request):
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('dashboard-index')
+        
+    pending_prescriptions = Prescription.objects.filter(status='Pending').order_by('created_at')
+    context = {
+        'prescriptions': pending_prescriptions,
+    }
+    return render(request, 'dashboard/dispense_list.html', context)
+
+# -------------------------------------------------------
+#   VIEW: CHI TIẾT VÀ XỬ LÝ CẤP PHÁT THUỐC
+#   - Logic chính giữ nguyên.
+# -------------------------------------------------------
+@login_required
+def dispense_process(request, pk):
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('dashboard-index')
+
+    try:
+        prescription = Prescription.objects.get(id=pk, status='Pending')
+    except Prescription.DoesNotExist:
+        messages.error(request, 'Toa thuốc này không tồn tại hoặc đã được xử lý.')
+        return redirect('dispense-list')
+
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                details_to_dispense = request.POST.getlist('details')
+                if not details_to_dispense:
+                    messages.error(request, 'Bạn phải chọn ít nhất một loại thuốc để cấp phát.')
+                    return redirect('dispense-process', pk=pk)
+                
+                for detail_id in details_to_dispense:
+                    detail = PrescriptionDetail.objects.get(id=detail_id, prescription=prescription)
+                    product = detail.product
+                    if product.quantity < detail.quantity:
+                        raise Exception(f"Không đủ thuốc '{product.name}'. Tồn kho: {product.quantity}.")
+                    
+                    product.quantity -= detail.quantity
+                    product.save()
+                    detail.is_collected = True
+                    detail.save()
+                    Order.objects.create(
+                        product=product,
+                        order_quantity=detail.quantity,
+                        staff=request.user,
+                        prescription=prescription
+                    )
+                
+                prescription.status = 'Dispensed'
+                prescription.completed_at = timezone.now()
+                prescription.save()
+                messages.success(request, f'Đã cấp phát thuốc thành công cho toa #{prescription.id}.')
+                return redirect('dispense-list')
+
+        except Exception as e:
+            messages.error(request, f'Lỗi: {e}')
+            return redirect('dispense-process', pk=pk)
+
+    context = {'prescription': prescription}
+    return render(request, 'dashboard/dispense_process.html', context)
+
+
+# =======================================================
 #               QUẢN LÝ SẢN PHẨM (PRODUCT CRUD)
 # =======================================================
 
 # -------------------------------------------------------
 #   VIEW: DANH SÁCH SẢN PHẨM (READ)
-#   - Hiển thị và tìm kiếm tất cả sản phẩm.
+#   - Đã xóa bỏ các biến *_count không cần thiết.
 # -------------------------------------------------------
 @login_required
 def product(request):
@@ -179,9 +224,6 @@ def product(request):
     context = {
         'items': items,
         'search_query': search_query,
-        'workers_count': User.objects.all().count(),
-        'orders_count': Order.objects.all().count(),
-        'products_count': items.count(),
     }
     return render(request, 'dashboard/product.html', context)
 
@@ -242,6 +284,7 @@ def product_delete(request, pk):
 
 # -------------------------------------------------------
 #   VIEW: DANH SÁCH BỆNH NHÂN (READ)
+#   - Đã xóa bỏ các biến *_count không cần thiết.
 # -------------------------------------------------------
 @login_required
 def patient_list(request):
@@ -253,9 +296,6 @@ def patient_list(request):
     context = {
         'patients': patients,
         'search_query': search_query,
-        'workers_count': User.objects.all().count(),
-        'orders_count': Order.objects.all().count(),
-        'products_count': Product.objects.all().count(),
     }
     return render(request, 'dashboard/patient_list.html', context)
 
@@ -315,15 +355,13 @@ def patient_delete(request, pk):
 
 # -------------------------------------------------------
 #   VIEW: DANH SÁCH NHÂN VIÊN
+#   - Đã xóa bỏ các biến *_count không cần thiết.
 # -------------------------------------------------------
 @login_required
 def staff(request):
     workers = User.objects.all()
     context = {
         'workers': workers,
-        'workers_count': workers.count(),
-        'orders_count': Order.objects.all().count(),
-        'products_count': Product.objects.all().count(),
     }
     return render(request, 'dashboard/staff.html', context)
 
@@ -340,7 +378,6 @@ def staff_detail(request, pk):
 
 # =======================================================
 #           CÁC VIEW/CLASS XỬ LÝ MẬT KHẨU
-#   (Đây là các chức năng phụ, có thể để ở cuối file)
 # =======================================================
 class UsernameResetForm(forms.Form):
     username = forms.CharField(max_length=150, label="Enter your username")
@@ -376,12 +413,3 @@ class CustomPasswordResetView(BasePasswordResetView):
         except User.DoesNotExist:
             messages.error(request, "User not found.")
             return redirect('username-reset')
-
-# -------------------------------------------------------
-#   HÀM HELPER (nếu có, ví dụ: format_price)
-#   (Lưu ý: hàm này hiện không được sử dụng ở đâu)
-# -------------------------------------------------------
-def format_price(value):
-    if value is not None:
-        return "{:,.0f}".format(float(value)).replace(',', '.')
-    return "N/A"

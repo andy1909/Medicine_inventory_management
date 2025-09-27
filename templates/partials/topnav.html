@@ -2,50 +2,62 @@
 <div class="container">
   <div class="row mt-4">
     <div class="col-md-4">
-      <div class="card">
-        <div class="card-header bg-info text-white">Information</div>
-        <div class="card-body">
-          <marquee behavior="" direction="">
-            <h3 class="my-4">5 chang linh ngu lam</h3>
-          </marquee>
-        </div>
-      </div>
+      
     </div>
-    <div class="col-md-8">
-      <div class="card">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
         <div class="card-header bg-info text-white">Modules</div>
         <div class="card-body">
           <div class="row">
-            <div class="col-md-4">
+
+             <!-- Module Staff -->
+            <div class="col-lg-3 col-md-6 mb-4">
               <a
                 class="text-decoration-none text-dark"
                 href="{% url 'dashboard-staff' %}"
               >
-                <div class="card my-card shadow text-center p-3">
+                <div class="card my-card-custom h-100 text-center p-3">
                   <h4>Staff <i class="fas fa-users"></i></h4>
                   <h3>{{ workers_count }}</h3>
                 </div>
               </a>
             </div>
-            <div class="col-md-4">
+
+            <!-- Module Products -->
+            <div class="col-lg-3 col-md-6 mb-4">
               <a
                 class="text-decoration-none text-dark"
                 href="{% url 'dashboard-product' %}"
               >
-                <div class="card my-card shadow text-center p-3">
+                <div class="card my-card-custom h-100 text-center p-3">
                   <h4>Products <i class="fas fa-box"></i></h4>
                   <h3>{{ products_count }}</h3>
                 </div>
               </a>
             </div>
-            <div class="col-md-4">
+
+
+            <!-- Module Orders -->
+            <div class="col-lg-3 col-md-6 mb-4">
               <a
                 class="text-decoration-none text-dark"
                 href="{% url 'dashboard-order' %}"
               >
-                <div class="card my-card shadow text-center p-3">
+                <div class="card my-card-custom h-100 text-center p-3">
                   <h4>Orders <i class="fas fa-shipping-fast"></i></h4>
                   <h3>{{ orders_count }}</h3>
+                </div>
+              </a>
+            </div>
+            
+            <!-- Module Lấy Thuốc -->
+            <div class="col-lg-3 col-md-6 mb-4">
+              <a class="text-decoration-none text-dark" href="{% url 'dispense-list' %}">
+                <div class="card my-card-custom h-100 text-center p-3">
+                  <h4>Lấy Thuốc <i class="fas fa-prescription-bottle-alt"></i></h4>
+                  <h3>
+                      <span class="badge badge-warning">{{ pending_prescriptions_count }}</span>
+                  </h3>
                 </div>
               </a>
             </div>
