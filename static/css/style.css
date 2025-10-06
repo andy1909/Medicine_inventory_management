@@ -1,38 +1,103 @@
+/* ===============================================
+   THIẾT LẬP CHUNG
+================================================ */
 body {
-  background: rgb(230, 227, 227);
+  background-color: #f4f7f6;
 }
 
-.my-card:hover {
-  transform: scale(1.1);
-  transition: 0.2s ease-in-out;
-}
-
-.my-card-custom {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    border: 1px solid #e9ecef;
-    background-color: #ffffff;
-}
-
-
-.my-card-custom:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.06) !important;
-}
-
-
+/* ===============================================
+   TÙY CHỈNH THANH NAVBAR
+================================================ */
 .nav-link-custom {
-    padding: 0.5rem 1rem !important; /* Tăng khoảng đệm */
-    border-radius: 20px; /* Bo tròn các góc */
-    transition: background-color 0.2s ease-in-out; /* Hiệu ứng chuyển động mượt */
+    padding: 0.5rem 1rem !important;
+    border-radius: 20px;
+    transition: background-color 0.2s ease-in-out;
 }
-
-/* Hiệu ứng khi di chuột qua các link */
 .nav-link-custom:hover {
-    background-color: rgba(255, 255, 255, 0.15); /* Nền trắng mờ */
+    background-color: rgba(255, 255, 255, 0.15);
 }
-
-/* Hiệu ứng cho link đang được active (trang hiện tại) */
 .nav-link-custom.active {
     background-color: rgba(255, 255, 255, 0.2);
     font-weight: 500;
 }
+
+/* ===============================================
+   GIAO DIỆN CARD MODULES
+================================================ */
+.my-card-custom {
+    border: none;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(135deg, #ffffff, #f7f9fc);
+}
+.my-card-custom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background-color: #007bff; /* Màu viền mặc định */
+    transition: all 0.3s ease;
+}
+.my-card-custom:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 30px rgba(0, 86, 179, 0.15);
+}
+.my-card-custom:hover::before {
+    height: 10px;
+}
+.my-card-custom i {
+    color: #007bff; /* Màu icon mặc định */
+    margin-bottom: 1rem !important;
+    transition: color 0.3s ease;
+}
+.my-card-custom h3 {
+    color: #343a40;
+    font-weight: 600;
+}
+.my-card-custom h2 {
+    color: #007bff; /* Màu số liệu mặc định */
+    font-weight: 700;
+    transition: color 0.3s ease;
+}
+
+/* ===============================================
+   SỬA LỖI: GHI ĐÈ MÀU SẮC CHO TỪNG MODULE
+   (Sử dụng bộ chọn cụ thể và trực tiếp hơn)
+================================================ */
+/* Khi hover vào card-staff, thay đổi màu của viền, icon, và số liệu */
+.my-card-custom.card-staff:hover::before { background-color: #6f42c1; }
+.my-card-custom.card-staff:hover i { color: #6f42c1; }
+.my-card-custom.card-staff:hover h2 { color: #6f42c1; }
+.my-card-custom.card-staff:hover { box-shadow: 0 20px 30px rgba(111, 66, 193, 0.15); }
+
+/* Module Products */
+.my-card-custom.card-products:hover::before { background-color: #20c997; }
+.my-card-custom.card-products:hover i { color: #20c997; }
+.my-card-custom.card-products:hover h2 { color: #20c997; }
+.my-card-custom.card-products:hover { box-shadow: 0 20px 30px rgba(32, 201, 151, 0.15); }
+
+/* Module Orders/Lịch Sử */
+.my-card-custom.card-orders:hover::before { background-color: #fd7e14; }
+.my-card-custom.card-orders:hover i { color: #fd7e14; }
+.my-card-custom.card-orders:hover h2 { color: #fd7e14; }
+.my-card-custom.card-orders:hover { box-shadow: 0 20px 30px rgba(253, 126, 20, 0.15); }
+
+/* Module Lấy Thuốc */
+.my-card-custom.card-dispense:hover::before { background-color: #dc3545; }
+.my-card-custom.card-dispense:hover i { color: #dc3545; }
+.my-card-custom.card-dispense:hover h2 { color: #dc3545; }
+.my-card-custom.card-dispense:hover { box-shadow: 0 20px 30px rgba(220, 53, 69, 0.15); }
+
+/* Module Báo Cáo */
+.my-card-custom.card-report:hover::before { background-color: #17a2b8; }
+.my-card-custom.card-report:hover i { color: #17a2b8; }
+.my-card-custom.card-report:hover { box-shadow: 0 20px 30px rgba(23, 162, 184, 0.15); }
+
+/* Module Bệnh Nhân */
+.my-card-custom.card-patient:hover::before { background-color: #ffc107; }
+.my-card-custom.card-patient:hover i { color: #ffc107; }
+.my-card-custom.card-patient:hover { box-shadow: 0 20px 30px rgba(255, 193, 7, 0.15); }

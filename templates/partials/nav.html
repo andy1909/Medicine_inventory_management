@@ -1,56 +1,49 @@
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-info navbar-dark navbar-custom shadow-sm bg-info">
-  {% if user.is_authenticated %}
-  <div class="container">
-    <a class="navbar-brand font-weight-bold" href="{% url 'dashboard-index' %}"
-      >Adoo Medicine</a
-    >
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-toggle="collapse"
-      data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
+<nav class="navbar navbar-expand-lg navbar-dark bg-info shadow-sm">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand font-weight-bold" href="{% url 'dashboard-index' %}">
+      Adoo Medicine
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      {% if user.is_authenticated %}
+      <!-- Menu cho người dùng đã đăng nhập -->
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
+          <!-- Giữ lại lớp nav-link-custom để có hiệu ứng hover và active -->
           <a class="nav-link nav-link-custom {% if request.resolver_match.url_name == 'dashboard-index' %}active{% endif %}" href="{% url 'dashboard-index' %}">
             <i class="fas fa-home mr-1"></i>Home
           </a>
-          
-        </li>
-        <li class="nav-item active">
-          <a class="nav-link nav-link-custom {% if 'patient' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'dashboard-patient-list' %}">
-            <i class="fas fa-id-card mr-1"></i>Hồ Sơ Bệnh Nhân
-          </a>
         </li>
       </ul>
-      
+
+      <!-- User Profile Dropdown (Vẫn giữ lại cho gọn gàng) -->
       <ul class="navbar-nav ml-auto align-items-center">
-        <li class="nav-item active">
-          <a class="nav-link nav-link-custom {% if 'profile' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'user-profile' %}">
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-link-custom dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fas fa-user-circle mr-1"></i>{{ user.username }}
           </a>
-        </li>
-        <li class="nav-item ml-2">
-          <form action="{% url 'user-logout' %}" method="POST" style="display: inline">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-outline-light btn-sm">
-              <i class="fas fa-sign-out-alt mr-1"></i>Logout
-            </button>
-          </form>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="{% url 'user-profile' %}">
+              <i class="fas fa-id-card fa-fw mr-2"></i>Profile
+            </a>
+            <div class="dropdown-divider"></div>
+            <form action="{% url 'user-logout' %}" method="POST" class="px-2">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-block btn-sm">
+                <i class="fas fa-sign-out-alt fa-fw mr-2"></i>Logout
+              </button>
+            </form>
+          </div>
         </li>
       </ul>
 
-
       {% else %}
-
+      <!-- Menu cho khách -->
       <ul class="navbar-nav ml-auto">
         <li class="nav-item">
           <a class="btn btn-outline-light btn-sm" href="{% url 'user-register' %}">

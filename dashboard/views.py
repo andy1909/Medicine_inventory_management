@@ -129,6 +129,37 @@ def prescription(request):
     return render(request, 'dashboard/prescription.html', context)
 
 
+
+# =======================================================
+#               TRANG BÁO CÁO (REPORTS)
+# =======================================================
+
+# -------------------------------------------------------
+#   VIEW: TRANG BÁO CÁO TỒN KHO VÀ SỬ DỤNG
+#   - Cung cấp dữ liệu cho các biểu đồ phân tích.
+# -------------------------------------------------------
+@login_required
+def report(request):
+    # Chỉ Admin/Staff mới được xem báo cáo
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('dashboard-index')
+
+    # Thu thập dữ liệu cho các biểu đồ
+    products = Product.objects.all().order_by('-quantity') # Sắp xếp sản phẩm theo số lượng tồn kho
+    orders = Order.objects.all()
+
+    context = {
+        'products': products,
+        'orders': orders,
+    }
+    return render(request, 'dashboard/report.html', context)
+
+
+
+
+
+
+
 # =======================================================
 #               MODULE LẤY THUỐC (DISPENSE)
 # =======================================================

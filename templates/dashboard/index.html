@@ -3,65 +3,97 @@
 
 {% block content %}
 
-    {# Trang này chỉ hiển thị nội dung nếu là Admin #}
     {% if user.is_authenticated and user.is_staff and user.is_superuser %}
 
-        {% include 'partials/topnav.html' %}
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h3 class="display-7">Chào mừng đến với Adoo Medicine!</h3>
+        </div>
+    </div>
 
-        <!--Graphs-->
-        <div class="container">
-            <div class="row my-5">
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <canvas id="myChart1"></canvas>
-                        </div>
-                    </div>
+    <!-- Các module chính -->
+    <div class="row align-items-center" style="min-height: 80vh;">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h3>Modules</h3>
                 </div>
-                <div class="col-md-6">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <canvas id="myChart"></canvas>
+                <div class="card-body">
+                    <div class="row justify-content-center">
+
+                        <!-- Module Staff -->
+                        <div class="col-lg-6 mb-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'dashboard-staff' %}">
+                                <div class="card my-card-custom card-staff h-100 text-center p-5">
+                                    <i class="fas fa-users fa-3x"></i>
+                                    <h3>Nhân Viên</h3>
+                                    <h2>{{ workers_count }}</h2>
+                                </div>
+                            </a>
                         </div>
+
+                        <!-- Module Products -->
+                        <div class="col-lg-6 mb-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'dashboard-product' %}">
+                                <div class="card my-card-custom card-products h-100 text-center p-5">
+                                    <i class="fas fa-box fa-3x"></i>
+                                    <h3>Sản Phẩm</h3>
+                                    <h2>{{ products_count }}</h2>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Module Orders -->
+                        <div class="col-lg-6 mb-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'dashboard-order' %}">
+                                <div class="card my-card-custom card-orders h-100 text-center p-5">
+                                    <i class="fas fa-history fa-3x"></i>
+                                    <h3>Lịch Sử</h3>
+                                    <h2>{{ orders_count }}</h2>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Module Lấy Thuốc -->
+                        <div class="col-lg-6 mb-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'dispense-list' %}">
+                                <div class="card my-card-custom card-dispense h-100 text-center p-5">
+                                    <i class="fas fa-prescription-bottle-alt fa-3x"></i>
+                                    <h3>Lấy Thuốc</h3>
+                                    <h2><span class="badge badge-warning">{{ pending_prescriptions_count }}</span></h2>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Module Báo Cáo -->
+                        <div class="col-lg-6 mb-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'dashboard-report' %}">
+                                <div class="card my-card-custom card-report h-100 text-center p-5">
+                                    <i class="fas fa-chart-line fa-3x"></i>
+                                    <h3>Báo Cáo</h3>
+                                    <small class="text-muted mt-2">Xem thống kê tồn kho</small>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Module Bệnh Nhân -->
+                        <div class="col-lg-6 mb-4">
+                            <a class="text-decoration-none text-dark" href="{% url 'dashboard-patient-list' %}">
+                                <div class="card my-card-custom card-patient h-100 text-center p-5">
+                                    <i class="fas fa-id-card fa-3x"></i>
+                                    <h3>Bệnh Nhân</h3>
+                                    <small class="text-muted mt-2">Quản lý hồ sơ</small>
+                                </div>
+                            </a>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
-        <!--End Graphs-->
+    </div>
 
-        <script>
-            var ctx1 = document.getElementById('myChart1').getContext('2d');
-            var myChart1 = new Chart(ctx1, {
-                type: 'pie',
-                data: {
-                    labels: [{% for order in orders %}'{{ order.product.name|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
-                    datasets: [{
-                        label: 'Orders',
-                        data: [{% for order in orders %}{{ order.order_quantity|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
-                        backgroundColor: ['#DE51A8', '#0a9396', '#ee9b00', '#94d2bd', '#005f73', '#e9d8a6'],
-                        borderColor: '#ffffff',
-                        borderWidth: 2
-                    }]
-                },
-                options: { responsive: true, plugins: { title: { display: true, text: 'Phân Bố Đơn Hàng', position: 'bottom', font: { size: 16 } } } }
-            });
-
-            var ctx2 = document.getElementById('myChart').getContext('2d');
-            var myChart2 = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: [{% for product in products %}'{{ product.name|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
-                    datasets: [{
-                        label: 'Số Lượng Thuốc',
-                        data: [{% for product in products %}{{ product.quantity|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
-                        backgroundColor: '#005f73'
-                    }]
-                },
-                options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { title: { display: true, text: 'Số Lượng Thuốc Trong Kho', position: 'bottom', font: { size: 16 } } } }
-            });
-        </script>
-
-    {# Không cần khối else ở đây nữa #}
     {% endif %}
 
 {% endblock %}

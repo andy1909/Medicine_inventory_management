@@ -25,4 +25,7 @@ urlpatterns = [
     # URLs cho module Lấy Thuốc
     path('dispense/', views.dispense_list, name='dispense-list'),
     path('dispense/process/<int:pk>/', views.dispense_process, name='dispense-process'),
+
+    # URL CHO TRANG BÁO CÁO
+    path('report/', views.report, name='dashboard-report')
 ]
