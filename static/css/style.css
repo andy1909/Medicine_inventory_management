@@ -1,37 +1,42 @@
-/* ===============================================
-   THIẾT LẬP CHUNG
-================================================ */
+/* ===================================================================
+   PHẦN 1: THIẾT LẬP CHUNG & THANH ĐIỀU HƯỚNG (NAVBAR)
+=================================================================== */
+
 body {
   background-color: #f4f7f6;
 }
 
-/* ===============================================
-   TÙY CHỈNH THANH NAVBAR
-================================================ */
 .nav-link-custom {
     padding: 0.5rem 1rem !important;
     border-radius: 20px;
     transition: background-color 0.2s ease-in-out;
 }
+
 .nav-link-custom:hover {
     background-color: rgba(255, 255, 255, 0.15);
 }
+
 .nav-link-custom.active {
     background-color: rgba(255, 255, 255, 0.2);
     font-weight: 500;
 }
 
-/* ===============================================
-   GIAO DIỆN CARD MODULES
-================================================ */
+
+/* ===================================================================
+   PHẦN 2: GIAO DIỆN CHUNG CHO CÁC CARD MODULES TRÊN DASHBOARD
+=================================================================== */
+
+/* --- THIẾT KẾ CƠ BẢN CỦA CARD --- */
 .my-card-custom {
-    border: none;
+    border: 1px solid #e0e0e0;
     border-radius: 10px;
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background: linear-gradient(135deg, #ffffff, #f7f9fc);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    background-color: #ffffff;
 }
+
+/* --- ĐƯỜNG VIỀN TRANG TRÍ Ở TRÊN CÙNG CARD --- */
 .my-card-custom::before {
     content: '';
     position: absolute;
@@ -39,65 +44,161 @@ body {
     left: 0;
     width: 100%;
     height: 5px;
-    background-color: #007bff; /* Màu viền mặc định */
+    background-color: #007bff; /* Màu mặc định */
     transition: all 0.3s ease;
 }
+
+/* --- HIỆU ỨNG KHI DI CHUỘT QUA (HOVER) --- */
 .my-card-custom:hover {
     transform: translateY(-10px);
-    box-shadow: 0 20px 30px rgba(0, 86, 179, 0.15);
 }
+
 .my-card-custom:hover::before {
     height: 10px;
 }
+
+/* --- NỘI DUNG BÊN TRONG CARD (ICON, TIÊU ĐỀ, SỐ LIỆU) --- */
 .my-card-custom i {
-    color: #007bff; /* Màu icon mặc định */
+    color: #007bff;
     margin-bottom: 1rem !important;
     transition: color 0.3s ease;
 }
-.my-card-custom h3 {
+
+.my-card-custom h4 {
     color: #343a40;
     font-weight: 600;
 }
-.my-card-custom h2 {
-    color: #007bff; /* Màu số liệu mặc định */
+
+.my-card-custom h5 {
+    color: #007bff;
     font-weight: 700;
     transition: color 0.3s ease;
 }
 
-/* ===============================================
-   SỬA LỖI: GHI ĐÈ MÀU SẮC CHO TỪNG MODULE
-   (Sử dụng bộ chọn cụ thể và trực tiếp hơn)
-================================================ */
-/* Khi hover vào card-staff, thay đổi màu của viền, icon, và số liệu */
-.my-card-custom.card-staff:hover::before { background-color: #6f42c1; }
-.my-card-custom.card-staff:hover i { color: #6f42c1; }
-.my-card-custom.card-staff:hover h2 { color: #6f42c1; }
-.my-card-custom.card-staff:hover { box-shadow: 0 20px 30px rgba(111, 66, 193, 0.15); }
 
-/* Module Products */
-.my-card-custom.card-products:hover::before { background-color: #20c997; }
-.my-card-custom.card-products:hover i { color: #20c997; }
-.my-card-custom.card-products:hover h2 { color: #20c997; }
-.my-card-custom.card-products:hover { box-shadow: 0 20px 30px rgba(32, 201, 151, 0.15); }
+/* ===================================================================
+   PHẦN 3: TÙY CHỈNH MÀU SẮC RIÊNG CHO TỪNG CARD MODULE KHI HOVER
+=================================================================== */
 
-/* Module Orders/Lịch Sử */
-.my-card-custom.card-orders:hover::before { background-color: #fd7e14; }
-.my-card-custom.card-orders:hover i { color: #fd7e14; }
-.my-card-custom.card-orders:hover h2 { color: #fd7e14; }
-.my-card-custom.card-orders:hover { box-shadow: 0 20px 30px rgba(253, 126, 20, 0.15); }
+/* --- MODULE NHÂN VIÊN --- */
+.my-card-custom.card-staff:hover { 
+    border-color: #6f42c1;
+    box-shadow: 0 20px 30px rgba(111, 66, 193, 0.15); 
+}
+.my-card-custom.card-staff:hover::before, 
+.my-card-custom.card-staff:hover i,
+.my-card-custom.card-staff:hover h5 { color: #6f42c1; }
 
-/* Module Lấy Thuốc */
-.my-card-custom.card-dispense:hover::before { background-color: #dc3545; }
-.my-card-custom.card-dispense:hover i { color: #dc3545; }
-.my-card-custom.card-dispense:hover h2 { color: #dc3545; }
-.my-card-custom.card-dispense:hover { box-shadow: 0 20px 30px rgba(220, 53, 69, 0.15); }
+/* --- MODULE SẢN PHẨM --- */
+.my-card-custom.card-products:hover { 
+    border-color: #20c997;
+    box-shadow: 0 20px 30px rgba(32, 201, 151, 0.15); 
+}
+.my-card-custom.card-products:hover::before, 
+.my-card-custom.card-products:hover i,
+.my-card-custom.card-products:hover h5 { color: #20c997; }
 
-/* Module Báo Cáo */
-.my-card-custom.card-report:hover::before { background-color: #17a2b8; }
+/* --- MODULE LỊCH SỬ (ORDERS) --- */
+.my-card-custom.card-orders:hover { 
+    border-color: #fd7e14;
+    box-shadow: 0 20px 30px rgba(253, 126, 20, 0.15); 
+}
+.my-card-custom.card-orders:hover::before, 
+.my-card-custom.card-orders:hover i,
+.my-card-custom.card-orders:hover h5 { color: #fd7e14; }
+
+/* --- MODULE LẤY THUỐC --- */
+.my-card-custom.card-dispense:hover { 
+    border-color: #dc3545;
+    box-shadow: 0 20px 30px rgba(220, 53, 69, 0.15); 
+}
+.my-card-custom.card-dispense:hover::before, 
+.my-card-custom.card-dispense:hover i,
+.my-card-custom.card-dispense:hover h5 { color: #dc3545; }
+
+/* --- MODULE BÁO CÁO --- */
+.my-card-custom.card-report:hover { 
+    border-color: #17a2b8;
+    box-shadow: 0 20px 30px rgba(23, 162, 184, 0.15); 
+}
+.my-card-custom.card-report:hover::before, 
 .my-card-custom.card-report:hover i { color: #17a2b8; }
-.my-card-custom.card-report:hover { box-shadow: 0 20px 30px rgba(23, 162, 184, 0.15); }
 
-/* Module Bệnh Nhân */
-.my-card-custom.card-patient:hover::before { background-color: #ffc107; }
+/* --- MODULE BỆNH NHÂN --- */
+.my-card-custom.card-patient:hover { 
+    border-color: #ffc107;
+    box-shadow: 0 20px 30px rgba(255, 193, 7, 0.15); 
+}
+.my-card-custom.card-patient:hover::before, 
 .my-card-custom.card-patient:hover i { color: #ffc107; }
-.my-card-custom.card-patient:hover { box-shadow: 0 20px 30px rgba(255, 193, 7, 0.15); }
+
+
+/* ===================================================================
+   PHẦN 4: GIAO DIỆN TRANG CHI TIẾT HỒ SƠ BỆNH NHÂN
+=================================================================== */
+
+/* --- KHUNG AVATAR HÌNH TRÒN CỐ ĐỊNH --- */
+.patient-avatar-frame {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto 1rem;
+}
+
+.patient-avatar-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+/* ===================================================================
+   PHẦN 5: GIAO DIỆN NÂNG CẤP CHO DROPDOWN PROFILE
+=================================================================== */
+
+/* --- AVATAR NHỎ TRÊN NAVBAR --- */
+.navbar-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    margin-left: 8px;
+}
+
+/* --- KHUNG DROPDOWN CHÍNH --- */
+.dropdown-menu-custom {
+    background-color: #34495e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* --- CÁC MỤC BÊN TRONG DROPDOWN (VD: "XEM HỒ SƠ") --- */
+.dropdown-menu-custom .dropdown-item {
+    color: #ecf0f1;
+    margin: 0.25rem 0.5rem;
+    padding: 0.5rem 1rem;
+    width: auto;
+    display: inline-block;
+    border-radius: 6px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* --- CÁC THÀNH PHẦN KHÁC TRONG DROPDOWN --- */
+.dropdown-menu-custom .dropdown-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-menu-custom form {
+    margin: 0.25rem 0.5rem;
+}

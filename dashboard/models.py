@@ -33,18 +33,47 @@ PRESCRIPTION_STATUS_CHOICES = (
 )
 
 
+BLOOD_TYPE_CHOICES = (
+    ('A+', 'A+'), ('A-', 'A-'),
+    ('B+', 'B+'), ('B-', 'B-'),
+    ('AB+', 'AB+'), ('AB-', 'AB-'),
+    ('O+', 'O+'), ('O-', 'O-'),
+    ('Unknown', 'Chưa rõ'),
+)
 
 # =======================================================
 #               MODEL CƠ SỞ: PATIENT
 #   Lưu trữ thông tin hồ sơ của từng bệnh nhân.
 # =======================================================
 class Patient(models.Model):
-    full_name = models.CharField(max_length=255, verbose_name="Họ và tên")
-    age = models.PositiveIntegerField(verbose_name="Tuổi")
+    # --- THÔNG TIN CÁ NHÂN ---
+    full_name = models.CharField(
+        max_length=255, verbose_name="Họ và tên")
+    date_of_birth = models.DateField(null=True, blank=True, verbose_name="Ngày sinh")
     gender = models.CharField(
         max_length=10, choices=GENDER_CHOICES, verbose_name="Giới tính")
     address = models.CharField(
         max_length=255, null=True, blank=True, verbose_name="Địa chỉ/Quê quán")
+    phone_number = models.CharField(
+        max_length=15, null=True, blank=True, verbose_name="Số điện thoại")
+    
+     # THÊM TRƯỜNG ẢNH ĐẠI DIỆN
+    avatar = models.ImageField(upload_to='patient_avatars/', null=True, blank=True, verbose_name="Ảnh đại diện")
+
+    # --- THÔNG TIN ĐỊNH DANH & BẢO HIỂM ---
+    citizen_id = models.CharField(
+        max_length=20, null=True, blank=True, unique=True, verbose_name="Số CCCD")
+    health_insurance_id = models.CharField(
+        max_length=20, null=True, blank=True, verbose_name="Số BHYT")
+    ethnicity = models.CharField(
+        max_length=50, null=True, blank=True, verbose_name="Dân tộc")
+
+    # --- THÔNG TIN Y TẾ ---
+    blood_type = models.CharField(
+        max_length=10, choices=BLOOD_TYPE_CHOICES, default='Unknown', verbose_name="Nhóm máu")
+    allergies = models.TextField(null=True, blank=True, verbose_name="Tiền sử dị ứng")
+    medical_history = models.TextField(null=True, blank=True, verbose_name="Bệnh sử (bệnh mãn tính)")
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -55,6 +84,14 @@ class Patient(models.Model):
         return self.full_name
 
 
+     # Hàm tiện ích để tính tuổi từ ngày sinh
+    @property
+    def age(self):
+        from datetime import date
+        if self.date_of_birth:
+            today = date.today()
+            return today.year - self.date_of_birth.year - ((today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day))
+        return None
 # =======================================================
 #               MODEL CƠ SỞ: PRODUCT
 #   Đại diện cho một loại thuốc hoặc sản phẩm y tế trong kho.

@@ -61,7 +61,7 @@ def order(request):
     context = {
         'orders': orders,
     }
-    return render(request, 'dashboard/order.html', context)
+    return render(request, 'dashboard/order/order.html', context)
 
 
 # =======================================================
@@ -126,7 +126,7 @@ def prescription(request):
         'prescriptions': prescriptions,
         'products': Product.objects.all(),
     }
-    return render(request, 'dashboard/prescription.html', context)
+    return render(request, 'dashboard/prescripion/prescription.html', context)
 
 
 
@@ -152,7 +152,7 @@ def report(request):
         'products': products,
         'orders': orders,
     }
-    return render(request, 'dashboard/report.html', context)
+    return render(request, 'dashboard/report/report.html', context)
 
 
 
@@ -177,7 +177,7 @@ def dispense_list(request):
     context = {
         'prescriptions': pending_prescriptions,
     }
-    return render(request, 'dashboard/dispense_list.html', context)
+    return render(request, 'dashboard/dispense/dispense_list.html', context)
 
 # -------------------------------------------------------
 #   VIEW: CHI TIẾT VÀ XỬ LÝ CẤP PHÁT THUỐC
@@ -230,7 +230,7 @@ def dispense_process(request, pk):
             return redirect('dispense-process', pk=pk)
 
     context = {'prescription': prescription}
-    return render(request, 'dashboard/dispense_process.html', context)
+    return render(request, 'dashboard/dispense/dispense_process.html', context)
 
 
 # =======================================================
@@ -256,7 +256,7 @@ def product(request):
         'items': items,
         'search_query': search_query,
     }
-    return render(request, 'dashboard/product.html', context)
+    return render(request, 'dashboard/product/product.html', context)
 
 
 # -------------------------------------------------------
@@ -274,7 +274,7 @@ def product_add(request):
     else:
         form = ProductForm()
     context = {'form': form}
-    return render(request, 'dashboard/product_add.html', context)
+    return render(request, 'dashboard/product/product_add.html', context)
 
 
 # -------------------------------------------------------
@@ -292,7 +292,7 @@ def product_update(request, pk):
     else:
         form = ProductForm(instance=item)
     context = {'form': form}
-    return render(request, 'dashboard/product_update.html', context)
+    return render(request, 'dashboard/product/product_update.html', context)
 
 
 # -------------------------------------------------------
@@ -306,7 +306,7 @@ def product_delete(request, pk):
         messages.success(request, f'Đã xóa thuốc "{item.name}".')
         return redirect('dashboard-product')
     context = {'item': item}
-    return render(request, 'dashboard/product_delete.html', context)
+    return render(request, 'dashboard/product/product_delete.html', context)
 
 
 # =======================================================
@@ -315,7 +315,6 @@ def product_delete(request, pk):
 
 # -------------------------------------------------------
 #   VIEW: DANH SÁCH BỆNH NHÂN (READ)
-#   - Đã xóa bỏ các biến *_count không cần thiết.
 # -------------------------------------------------------
 @login_required
 def patient_list(request):
@@ -328,7 +327,7 @@ def patient_list(request):
         'patients': patients,
         'search_query': search_query,
     }
-    return render(request, 'dashboard/patient_list.html', context)
+    return render(request, 'dashboard/patient/patient_list.html', context)
 
 
 # -------------------------------------------------------
@@ -337,7 +336,7 @@ def patient_list(request):
 @login_required
 def patient_add(request):
     if request.method == 'POST':
-        form = PatientForm(request.POST)
+        form = PatientForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Đã thêm hồ sơ bệnh nhân mới thành công.')
@@ -345,7 +344,7 @@ def patient_add(request):
     else:
         form = PatientForm()
     context = {'form': form, 'title': 'Thêm Hồ Sơ Bệnh Nhân'}
-    return render(request, 'dashboard/patient_form.html', context)
+    return render(request, 'dashboard/patient/patient_form.html', context)
 
 
 # -------------------------------------------------------
@@ -355,7 +354,7 @@ def patient_add(request):
 def patient_update(request, pk):
     patient = Patient.objects.get(id=pk)
     if request.method == 'POST':
-        form = PatientForm(request.POST, instance=patient)
+        form = PatientForm(request.POST, request.FILES, instance=patient)
         if form.is_valid():
             form.save()
             messages.success(request, f'Đã cập nhật hồ sơ cho bệnh nhân {patient.full_name}.')
@@ -363,7 +362,7 @@ def patient_update(request, pk):
     else:
         form = PatientForm(instance=patient)
     context = {'form': form, 'title': 'Cập Nhật Hồ Sơ Bệnh Nhân'}
-    return render(request, 'dashboard/patient_form.html', context)
+    return render(request, 'dashboard/patient/patient_form.html', context)
 
 
 # -------------------------------------------------------
@@ -377,8 +376,28 @@ def patient_delete(request, pk):
         messages.success(request, f'Đã xóa hồ sơ của bệnh nhân {patient.full_name}.')
         return redirect('dashboard-patient-list')
     context = {'item': patient}
-    return render(request, 'dashboard/patient_confirm_delete.html', context)
+    return render(request, 'dashboard/patient/patient_confirm_delete.html', context)
 
+
+
+# -------------------------------------------------------
+#   VIEW: CHI TIẾT HỒ SƠ BỆNH NHÂN (READ DETAIL)
+# -------------------------------------------------------
+@login_required
+def patient_detail(request, pk):
+    try:
+        patient = Patient.objects.get(id=pk)
+        # Lấy lịch sử kê đơn của riêng bệnh nhân này
+        prescriptions = Prescription.objects.filter(patient=patient).order_by('-created_at')
+        context = {
+            'patient': patient,
+            'prescriptions': prescriptions,
+        }
+        return render(request, 'dashboard/patient/patient_detail.html', context)
+    except Patient.DoesNotExist:
+        messages.error(request, 'Hồ sơ bệnh nhân không tồn tại.')
+        return redirect('dashboard-patient-list')
+    
 
 # =======================================================
 #               QUẢN LÝ NHÂN VIÊN (STAFF)
@@ -394,7 +413,7 @@ def staff(request):
     context = {
         'workers': workers,
     }
-    return render(request, 'dashboard/staff.html', context)
+    return render(request, 'dashboard/staff/staff.html', context)
 
 
 # -------------------------------------------------------
@@ -404,7 +423,7 @@ def staff(request):
 def staff_detail(request, pk):
     worker = User.objects.get(id=pk)
     context = {'worker': worker}
-    return render(request, 'dashboard/staff_detail.html', context)
+    return render(request, 'dashboard/staff/staff_detail.html', context)
 
 
 # =======================================================

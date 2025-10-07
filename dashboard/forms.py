@@ -76,12 +76,19 @@ class ProductForm(forms.ModelForm):
 class PatientForm(forms.ModelForm):
     class Meta:
         model = Patient
-        fields = ['full_name', 'age', 'gender', 'address']
+        fields = ['full_name', 'date_of_birth', 'gender', 'phone_number', 'address', 'avatar',
+            'citizen_id', 'health_insurance_id', 'ethnicity', 'blood_type',
+            'allergies', 'medical_history']
+        
         widgets = {
             'full_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'age': forms.NumberInput(attrs={'class': 'form-control'}),
+            'date_of_birth': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
+            'blood_type': forms.Select(attrs={'class': 'form-control'}),
+            'allergies': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'medical_history': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
 
