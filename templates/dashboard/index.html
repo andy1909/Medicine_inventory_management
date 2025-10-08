@@ -1,4 +1,10 @@
 {% extends 'partials/base.html' %}
+{% load static %}
+
+{% block extracss %}
+    <link rel="stylesheet" href="{% static 'css/components/modules.css' %}">
+{% endblock %}
+
 {% block title %} Bảng Điều Khiển {% endblock %}
 
 {% block content %}
@@ -22,10 +28,7 @@
                     <div class="card-body">
                         <div class="row justify-content-center">
 
-                            <!-- ======================================================= -->
-                            <!--   MODULE NHỎ LẠI: Giảm padding thành p-4, icon fa-2x    -->
-                            <!-- ======================================================= -->
-
+                    
                             <!-- Module Staff -->
                             <div class="col-lg-4 col-md-6 mb-4">
                                 <a class="text-decoration-none text-dark" href="{% url 'dashboard-staff' %}">

@@ -1,6 +1,12 @@
 {% extends 'partials/base.html' %}
+{% load static %}
+
+{% block extracss %}
+    <link rel="stylesheet" href="{% static 'css/dashboard/patient.css' %}">
+{% endblock %}
+
 {% block title %} Hồ Sơ: {{ patient.full_name }} {% endblock %}
-{% load static %} {# <-- Thêm dòng này để sử dụng {% static %} #}
+
 
 {% block content %}
 <div class="container mt-4">
@@ -15,9 +21,6 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-3 text-center">
-                    <!-- ======================================================= -->
-                    <!--           SỬA LỖI LOGIC HIỂN THỊ ẢNH TẠI ĐÂY            -->
-                    <!-- ======================================================= -->
                     <div class="patient-avatar-frame">
                         <img src="{% if patient.avatar %}{{ patient.avatar.url }}{% else %}{% static 'images/default_image.jpg' %}{% endif %}" alt="Avatar">
                     </div>
@@ -52,6 +55,7 @@
             </div>
         </div>
     </div>
+
     <!-- Card Lịch Sử Kê Đơn -->
     <div class="card shadow-sm mt-4">
         <div class="card-header">

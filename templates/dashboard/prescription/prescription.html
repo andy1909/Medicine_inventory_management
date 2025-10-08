@@ -1,4 +1,6 @@
 {% extends 'partials/base.html' %}
+{% load static %}
+
 {% block title %} Kê Đơn Thuốc {% endblock %}
 {% load crispy_forms_tags %}
 
@@ -97,54 +99,19 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-<!-- SCRIPT THÊM/XÓA THUỐC ĐỘNG -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const addButton = document.getElementById('add-more');
-    const container = document.getElementById('details-container');
-    const formCountInput = document.getElementById('form-count');
-    let formIndex = 0;
 
-    const products = [
-        {% for product in products %}
-        { id: '{{ product.id }}', name: '{{ product.name|escapejs }} (Còn: {{product.quantity}})' },
-        {% endfor %}
-    ];
-
-    function addDetailForm() {
-        const newFormHtml = `
-            <div class="row mb-3 detail-form align-items-end" data-index="${formIndex}">
-                <div class="col-md-6">
-                    <label for="id_details-${formIndex}-product">Tên thuốc</label>
-                    <select name="details-${formIndex}-product" id="id_details-${formIndex}-product" class="form-control" required>
-                        <option value="">---------</option>
-                        ${products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="id_details-${formIndex}-quantity">Số lượng</label>
-                    <input type="number" name="details-${formIndex}-quantity" id="id_details-${formIndex}-quantity" class="form-control" min="1" required>
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger btn-sm remove-form w-100">Xóa</button>
-                </div>
-            </div>`;
-        
-        container.insertAdjacentHTML('beforeend', newFormHtml);
-        formIndex++;
-        formCountInput.value = formIndex;
-    }
-
-    addDetailForm();
-
-    addButton.addEventListener('click', addDetailForm);
-
-    container.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-form')) {
-            e.target.closest('.detail-form').remove();
-        }
-    });
-});
-</script>
+{% block javascript %}
+    <script src="{% static 'js/dashboard/prescription.js' %}"></script>
+    <script>
+        // Truyền dữ liệu từ Django sang JavaScript
+        const productsData = [
+            {% for product in products %}
+            { id: '{{ product.id }}', name: '{{ product.name|escapejs }} (Còn: {{product.quantity}})' },
+            {% endfor %}
+        ];
+        // Gọi hàm khởi tạo với dữ liệu
+        initializePrescriptionForm(productsData);
+    </script>
 {% endblock %}

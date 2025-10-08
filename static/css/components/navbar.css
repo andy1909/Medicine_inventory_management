@@ -1,0 +1,63 @@
+.nav-link-custom {
+    padding: 0.5rem 1rem !important;
+    border-radius: 20px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.nav-link-custom:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+.nav-link-custom.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: 500;
+}
+
+
+/* ===================================================================
+           GIAO DIỆN NÂNG CẤP CHO DROPDOWN PROFILE
+=================================================================== */
+
+/* --- AVATAR NHỎ TRÊN NAVBAR --- */
+.navbar-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    margin-left: 8px;
+}
+
+/* --- KHUNG DROPDOWN CHÍNH --- */
+.dropdown-menu-custom {
+    background-color: #34495e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0.5rem 0;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* --- CÁC MỤC BÊN TRONG DROPDOWN (VD: "XEM HỒ SƠ") --- */
+.dropdown-menu-custom .dropdown-item {
+    color: #ecf0f1;
+    margin: 0.25rem 0.5rem;
+    padding: 0.5rem 1rem;
+    width: auto;
+    display: inline-block;
+    border-radius: 6px;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+.dropdown-menu-custom .dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+/* --- CÁC THÀNH PHẦN KHÁC TRONG DROPDOWN --- */
+.dropdown-menu-custom .dropdown-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dropdown-menu-custom form {
+    margin: 0.25rem 0.5rem;
+}
