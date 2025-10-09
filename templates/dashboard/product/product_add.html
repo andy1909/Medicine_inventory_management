@@ -1,32 +1,24 @@
 {% extends 'partials/base.html' %}
+{% load static %}
 {% block title %} Thêm Thuốc {% endblock %}
 {% load crispy_forms_tags %}
 
 {% block content %}
-
-
-
-
-<!-- ===============================================
-                   HTML
-================================================ -->
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                {% endfor %}
-            {% endif %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
 
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h4><i class="fas fa-plus-circle"></i> Thêm Thuốc Mới Vào Kho</h4>
+                    <h4><i class="fas fa-plus-circle mr-2"></i>Thêm Thuốc Mới Vào Kho</h4>
                 </div>
                 <div class="card-body">
                     <form method="POST">
@@ -35,7 +27,7 @@
                         <div class="mt-4 text-right">
                             <a href="{% url 'dashboard-product' %}" class="btn btn-secondary">Hủy Bỏ</a>
                             <button class="btn btn-success" type="submit">
-                                <i class="fas fa-save"></i> Lưu Lại
+                                <i class="fas fa-save mr-1"></i> Lưu Lại
                             </button>
                         </div>
                     </form>
@@ -44,38 +36,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-
-
-
-
-<!-- ===============================================
-                   JAVASCRIPT
-================================================ -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Hàm định dạng số khi người dùng nhập liệu
-    const formatPrice = (input) => {
-        // Lấy giá trị, loại bỏ dấu chấm và các ký tự không phải số
-        let value = input.value.replace(/\./g, '').replace(/\D/g, '');
-        // Nếu có giá trị, định dạng lại theo chuẩn Việt Nam
-        if (value) {
-            input.value = Number(value).toLocaleString('vi-VN');
-        } else {
-            input.value = ''; // Nếu xóa hết thì rỗng
-        }
-    };
-
-    // Áp dụng cho cả 2 ô giá
-    const priceInputs = document.querySelectorAll('input[name="import_price"], input[name="sale_price"]');
-    priceInputs.forEach(input => {
-        // Định dạng ngay khi tải trang (cho trường hợp edit)
-        formatPrice(input);
-        // Định dạng lại mỗi khi người dùng nhập
-        input.addEventListener('input', function() {
-            formatPrice(this);
-        });
-    });
-});
-</script>
+{% block javascript %}
+    <script src="{% static 'js/dashboard/product_form.js' %}"></script>
 {% endblock %}

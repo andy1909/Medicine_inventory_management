@@ -1,66 +1,15 @@
 {% extends 'partials/base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block extracss %}
+    <!-- Nạp file CSS riêng cho trang quản lý sản phẩm -->
+    <link rel="stylesheet" href="{% static 'css/dashboard/product.css' %}">
+{% endblock %}
+
 {% block title %} Quản Lý Thuốc {% endblock %}
-{% load humanize %} <!-- Thêm dòng này để sử dụng filter định dạng số -->
 
 {% block content %}
-
-<!-- ===============================================
-                   STYLE CSS TỐI ƯU
-================================================ -->
-<style>
-    .card-header h4 {
-        margin-bottom: 0;
-        display: flex;
-        align-items: center;
-    }
-    
-    .card-header h4 i {
-        margin-right: 10px;
-    }
-
-    .table-container {
-        /* Bỏ border ở đây để dùng border của card */
-        max-height: 60vh; /* Chiều cao tối đa bằng 60% chiều cao màn hình */
-        overflow-y: auto;
-    }
-
-    .table thead th {
-        position: sticky;
-        top: 0;
-        background-color: #f8f9fa; /* Màu nền xám nhạt cho header */
-        color: #343a40; /* Màu chữ tối */
-        z-index: 10;
-        vertical-align: middle;
-        text-align: center;
-        border-bottom: 2px solid #dee2e6;
-        white-space: nowrap;
-    }
-
-    .table tbody td {
-        vertical-align: middle;
-        text-align: center;
-    }
-
-    .table tbody tr:hover {
-        background-color: #e9ecef; /* Hiệu ứng khi di chuột qua */
-    }
-
-    .action-buttons a {
-        margin: 0 5px;
-    }
-
-    /* Đánh dấu các dòng sản phẩm đặc biệt */
-    .table-danger, .table-danger > th, .table-danger > td {
-        background-color: #f8d7da !important; /* Hết hàng */
-    }
-    .table-warning, .table-warning > th, .table-warning > td {
-        background-color: #fff3cd !important; /* Sắp hết hàng */
-    }
-</style>
-
-<!-- ===============================================
-                   HTML CẤU TRÚC LẠI
-================================================ -->
 <div class="container mt-4">
     <div class="row">
         <div class="col-12">
@@ -116,7 +65,6 @@
                             </thead>
                             <tbody>
                                 {% for item in items %}
-                                    {% comment %} Đặt class cho dòng dựa trên số lượng {% endcomment %}
                                     <tr class="{% if item.quantity == 0 %}table-danger{% elif item.quantity < 10 %}table-warning{% endif %}">
                                         <td><strong>{{ item.code }}</strong></td>
                                         <td class="text-left">{{ item.name }}</td>
@@ -153,12 +101,8 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-<script>
-// Kích hoạt tooltip của Bootstrap
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
-</script>
-
+{% block javascript %}
+    <script src="{% static 'js/dashboard/product.js' %}"></script>
 {% endblock %}

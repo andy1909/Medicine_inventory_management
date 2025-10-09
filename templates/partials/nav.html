@@ -15,16 +15,13 @@
       <!-- Menu cho người dùng đã đăng nhập -->
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <!-- Giữ lại lớp nav-link-custom để có hiệu ứng hover và active -->
           <a class="nav-link nav-link-custom {% if request.resolver_match.url_name == 'dashboard-index' %}active{% endif %}" href="{% url 'dashboard-index' %}">
             <i class="fas fa-home mr-1"></i>Home
           </a>
         </li>
       </ul>
 
-      <!-- ======================================================= -->
-      <!--        USER PROFILE DROPDOWN (PHIÊN BẢN NÂNG CẤP)        -->
-      <!-- ======================================================= -->
+      <!-- Phần menu bên phải với avatar và dropdown -->
       <ul class="navbar-nav ml-auto align-items-center">
         <li class="nav-item dropdown">
           <a class="nav-link nav-link-custom dropdown-toggle active d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

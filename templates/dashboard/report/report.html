@@ -1,4 +1,6 @@
 {% extends 'partials/base.html' %}
+{% load static %}
+
 {% block title %} Báo Cáo Tồn Kho {% endblock %}
 
 {% block content %}
@@ -7,7 +9,7 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h4><i class="fas fa-chart-pie"></i> Báo Cáo & Thống Kê</h4>
+                    <h4><i class="fas fa-chart-pie mr-2"></i>Báo Cáo & Thống Kê</h4>
                 </div>
             </div>
         </div>
@@ -34,59 +36,17 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // === BIỂU ĐỒ 1: SỐ LƯỢNG TỒN KHO ===
-    var ctx1 = document.getElementById('productQuantityChart').getContext('2d');
-    var productQuantityChart = new Chart(ctx1, {
-        type: 'bar',
-        data: {
-            labels: [{% for product in products %}'{{ product.name|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
-            datasets: [{
-                label: 'Số Lượng Tồn Kho',
-                data: [{% for product in products %}{{ product.quantity|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
-                backgroundColor: '#005f73',
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Số Lượng Thuốc Hiện Có Trong Kho',
-                    font: { size: 16 }
-                }
-            },
-            scales: { y: { beginAtZero: true } }
-        }
-    });
+{% block javascript %}
+    <!-- Nạp file JS cho trang báo cáo -->
+    <script src="{% static 'js/dashboard/report.js' %}"></script>
+    <script>
+        // Lấy dữ liệu JSON từ context mà view đã truyền sang
+        const productsData = JSON.parse('{{ products_json|safe }}');
+        const ordersData = JSON.parse('{{ orders_json|safe }}');
 
-    // === BIỂU ĐỒ 2: PHÂN BỐ ĐƠN HÀNG ĐÃ XUẤT ===
-    var ctx2 = document.getElementById('orderDistributionChart').getContext('2d');
-    var orderDistributionChart = new Chart(ctx2, {
-        type: 'pie',
-        data: {
-            labels: [{% for order in orders %}'{{ order.product.name|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
-            datasets: [{
-                label: 'Số lượng đã xuất',
-                data: [{% for order in orders %}{{ order.order_quantity|default:0 }}{% if not forloop.last %},{% endif %}{% endfor %}],
-                backgroundColor: ['#DE51A8', '#0a9396', '#ee9b00', '#94d2bd', '#005f73', '#e9d8a6', '#ca6702'],
-                borderColor: '#ffffff',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                title: {
-                    display: true,
-                    text: 'Tỉ Lệ Các Loại Thuốc Đã Được Cấp Phát',
-                    font: { size: 16 }
-                }
-            }
-        }
-    });
-});
-</script>
+        // Gọi hàm khởi tạo biểu đồ và truyền dữ liệu vào
+        initializeReportCharts(productsData, ordersData);
+    </script>
 {% endblock %}

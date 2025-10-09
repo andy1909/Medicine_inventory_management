@@ -28,6 +28,11 @@ from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 
 
+# Import json
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
+
 # =======================================================
 #               CÁC VIEW CHÍNH & DASHBOARD
 # =======================================================
@@ -153,7 +158,28 @@ def report(request):
         'orders': orders,
     }
     return render(request, 'dashboard/report/report.html', context)
+@login_required
+def report(request):
+    # Chỉ Admin/Staff mới được xem báo cáo
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect('dashboard-index')
 
+    # --- Dữ liệu cho biểu đồ Bar (Tồn kho sản phẩm) ---
+    products = Product.objects.all().order_by('-quantity')
+    products_data = list(products.values('name', 'quantity'))
+
+    # --- Dữ liệu cho biểu đồ Pie (Phân bố xuất kho) ---
+    orders = Order.objects.all()
+    orders_data = list(orders.values('product__name', 'order_quantity'))
+    for order in orders_data:
+        order['product_name'] = order.pop('product__name')
+        order['quantity'] = order.pop('order_quantity')
+
+    context = {
+        'products_json': json.dumps(products_data, cls=DjangoJSONEncoder),
+        'orders_json': json.dumps(orders_data, cls=DjangoJSONEncoder),
+    }
+    return render(request, 'dashboard/report/report.html', context)
 
 
 
